@@ -1,0 +1,29 @@
+using System;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        using (var context = new MyDbContext())
+        {
+            var result = context.Orders
+                .Include(o => o.Customer)
+                .Where(o => o.OrderDate.Year == 2023)
+                .OrderByDescending(o => o.TotalAmount)
+                .Select(o => new
+                {
+                    OrderId = o.Id,
+                    CustomerName = o.Customer.Name,
+                    Amount = o.TotalAmount
+                })
+                .ToList();
+
+            foreach (var order in result)
+            {
+                Console.WriteLine($"Order ID: {order.OrderId}, Customer: {order.CustomerName}, Amount: {order.Amount}");
+            }
+        }
+    }
+}
