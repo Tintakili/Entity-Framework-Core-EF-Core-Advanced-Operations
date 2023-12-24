@@ -1,0 +1,44 @@
+using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+
+// Define your Product entity class
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    // other properties...
+}
+
+// DbContext class representing your database
+public class AppDbContext : DbContext
+{
+    public DbSet<Product> Products { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        // Configure your database connection here
+        optionsBuilder.UseSqlServer("Your-Connection-String");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        using (var context = new AppDbContext())
+        {
+            // Retrieve products with price greater than 100
+            var expensiveProducts = context.Products
+                .Where(p => p.Price > 100)
+                .ToList();
+
+            // Display the retrieved products
+            foreach (var product in expensiveProducts)
+            {
+                Console.WriteLine($"Product: {product.Name}, Price: {product.Price}");
+            }
+        }
+    }
+}
